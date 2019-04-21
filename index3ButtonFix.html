@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+<style>
+.btn-toolbar {
+  flex-wrap: wrap;
+}
+
+.btn-group {
+  flex-wrap: wrap;
+}
+
+</style>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+  <!-- I recommend you host this file on your own, since this will change without warning -->
+  <script src="datamaps.gtm.js" type="text/javascript"></script>
+</head>
+<style>
+
+</style>
+<body>
+
+
+<div class="guat-main-container">
+
+  <h2 id="titleLegend" style="font-size:125%; text-align: center; width:500px; "></h2>
+
+<div id="container1" style="position: relative; height: 400px; width: 500px;  "></div>
+
+
+  <div class="datamaps-legend" style="justify-content: center; display: flex; width:500px; height:22px;">
+    <dl style="float: center; position: relative; ">
+      <dt id="more">Higher: </dt>
+      <dd style="background-color:#02386F">&nbsp;</dd>
+    <!-- font-size: 1.5vw -->
+      <dt id="less">Lower:</dt>
+      <dd style="background-color:#EFEFFF">&nbsp;</dd>
+    </dl>
+  </div>
+
+<div style="width: 500px; ">
+<p id="source" style="font-size: 75%;float: center; text-align: center;float: center;position: relative;"></p>
+  <!-- font-size: 1.5vw -->
+
+
+
+  <div class="btn-toolbar mb-3" style="justify-content: center; display: flex;" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn text-center" style="justify-content: center; display: flex;" role="group">
+    <button id="malnutrition" class="btn btn-primary" onclick="chronicallyMalnourished(malnutrition)">Malnutrition</button>
+    <button id="remittances" class="btn btn-primary" onclick="updateRe(remittances)">Remittances</button>
+    <button id="poverty" class="btn btn-primary" onclick="poverty(populationLivingInPoverty)">Poverty</button>
+    <button id="extremePoverty" class="btn btn-primary" onclick="povertyExtreme(extremePoverty2014)">Extreme Poverty</button>
+  </div>
+  </div>
+
+  <div class="btn-toolbar mb-3" style="justify-content: center; display: flex;" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn text-center" role="group" style="justify-content: center; display: flex;">
+    <button id="enrolled" class="btn btn-primary" onclick="schoolEnrollment(enrolledInElementary)">School Enrollment</button>
+    <button id="infantMortality" class="btn btn-primary" onclick="infantMortalityFunction(infantMortality)">Infant Mortality</button>
+  </div>
+  </div>
+  <div class="btn-toolbar mb-3" style="justify-content: center; display: flex;" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn text-center" role="group" style="justify-content: center; display: flex;">
+  <button id="unaccompanied" class="btn btn-primary" onclick="updateUAM(unaccompanied2018)">Unaccompanied Minors</button>
+  </div>
+  </div>
+
+
+
+
+</div>
+</div>
+
+     <script>
+
+     $(document).ready(function() {
+
+
+
+    poverty(populationLivingInPoverty);
+
+  });
+
+     const remittances = {
+       "GT.AV": { // Alta Verapaz
+         "fillKey": "9cafcd",
+         "numberOfThings": "<strong>Alta Verapaz</strong> received around <strong>6 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$395,956,804</strong>.",
+         "percentage": "6%"
+       },
+       "GT.BV": { // Baja Verapaz
+         "fillKey": "c2cce3",
+         "numberOfThings":"<strong>Baja Verapaz</strong> received around <strong>4 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$267,948,499</strong>.",
+         "percentage": "4%"
+       },
+       "GT.CM": { // Chimaltenango
+         "fillKey": "e5e7f9",
+         "numberOfThings": "<strong>Chimaltenango</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$148,520,327</strong>.",
+         "percentage": "2%"
+       },
+       "GT.CQ": { // Chiquimula
+         "fillKey": "bac6df",
+         "numberOfThings": "<strong>Chiquimula</strong> received around <strong>4 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$294,356,934</strong>.",
+         "percentage": "4%"
+       },
+       "GT.PR": { // El Progreso
+         "fillKey": "e0e4f6",
+         "numberOfThings": "<strong>El Progreso</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$163,559,083</strong>.",
+         "percentage": "2%"
+       },
+       "GT.ES": { // Escuintla
+         "fillKey": "abbbd6",
+         "numberOfThings": "<strong>Escuintla</strong> received around <strong>5 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$343,600,100</strong>.",
+         "percentage": "5%"
+       },
+       "GT.GU": { // Guatemala
+         "fillKey": "02386f",
+         "numberOfThings": "The <strong>department of Guatemala</strong> received around <strong>13 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$920,815,753</strong>.",
+         "percentage": "13%"
+       },
+       "GT.HU": { // Huehuetenango
+         "fillKey": "5f7fa7",
+         "numberOfThings": "<strong>Huehuetenango</strong> received around <strong>9 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$605,505,826</strong>.",
+         "percentage": "9%"
+       },
+       "GT.IZ": { // Izabal
+         "fillKey": "c4cee5",
+         "numberOfThings": "<strong>Izabal</strong> received around <strong>4 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$259,654,525</strong>.",
+         "percentage": "4%"
+       },
+       "GT.JA": { // Jalapa
+         "fillKey": "dee2f5",
+         "numberOfThings": "<strong>Jalapa</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$171,799,326</strong>.",
+         "percentage": "2%"
+       },
+       "GT.JU": { // Jutiapa
+         "fillKey": "bac6df",
+         "numberOfThings": "<strong>Jutiapa</strong> received around <strong>4 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$293,206,488</strong>.",
+         "percentage": "4%"
+       },
+       "GT.PE": {  // Petén
+         "fillKey": "95aac8",
+         "numberOfThings": "<strong>Petén</strong> received around <strong>6 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$419,846,293</strong>.",
+         "percentage": "6%"
+
+       },
+       "GT.QZ": { // Quezaltenango
+         "fillKey": "819abc",
+         "numberOfThings": "<strong>Quezaltenango</strong> received around <strong>7 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$486,450,507</strong>.",
+         "percentage": "7%"
+
+       },
+       "GT.QC": { // Quiché
+         "fillKey": "a9b9d5",
+         "numberOfThings": "<strong>Quiché</strong> received around <strong>5 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$351,396,961</strong>.",
+         "percentage": "5%"
+
+       },
+       "GT.RE": { // Retalhuleu
+         "fillKey": "dde1f4",
+         "numberOfThings": "<strong>Retalhuleu</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$173,297,606</strong>.",
+         "percentage": "2%"
+       },
+       "GT.SA": { // Sacatepéquez
+         "fillKey": "efefff",
+         "numberOfThings": "<strong>Sacatepéquez</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$113,347,828</strong>.",
+         "percentage": "2%"
+       },
+       "GT.SM": { // San Marcos
+         "fillKey": "6081a8",
+         "numberOfThings": "<strong>San Marcos</strong> received around <strong>9 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$600,174,656</strong>.",
+         "percentage": "9%"
+       },
+       "GT.SR": { // Santa Rosa
+         "fillKey": "d6dcf0",
+         "numberOfThings": "<strong>Santa Rosa</strong> received around <strong>3 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$198,120,651</strong>.",
+         "percentage": "3%"
+       },
+       "GT.SO": { // Sololá
+         "fillKey": "eaebfc",
+         "numberOfThings":"<strong>Sololá</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$130,982,384</strong>.",
+         "percentage": "2%"
+       },
+       "GT.SU": { //  Suchitepéquez
+         "fillKey": "c1cce3",
+         "numberOfThings": "<strong>Suchitepéquez</strong> received around <strong>4 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$269,173,276</strong>.",
+         "percentage": "4%"
+       },
+       "GT.TO": { // Totonicapán
+         "fillKey": "e7e9fa",
+         "numberOfThings":"<strong>Totonicapán</strong> received around <strong>2 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$141,290,972</strong>.",
+         "percentage": "2%"
+       },
+
+       "GT.ZA": { // Zacapa
+         "fillKey": "dadef2",
+         "numberOfThings": "<strong>Zacapa</strong> received around <strong>3 percent</strong> of remittances sent to Guatemala from the U.S. in 2016, totaling <strong>$186,562,038</strong>.",
+         "percentage": "3%"
+       }
+     };
+
+     //Returned unaccompanied minors 2018
+     const unaccompanied2018 = {
+       "GT.AV": { // Alta Verapaz
+         "fillKey": "e2e5f7",
+         "numberOfThings": "In <strong>Alta Verapaz, 79</strong> unaccompanied minors were returned in 2018 at a rate of nearly <strong>12 children per 100,000</strong> residents.",
+         "rate": 11.5
+       },
+       "GT.BV": { // Baja Verapaz
+         "fillKey": "e0e4f6",
+         "numberOfThings":"In <strong> Baja Verapaz, 87 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 56  children per 100,000</strong> residents.",
+         "rate": 55.2
+       },
+       "GT.CM": { // Chimaltenango
+         "fillKey": "dadff2",
+         "numberOfThings": "In <strong> Chimaltenango, 122 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 34  children per 100,000</strong> residents.",
+         "rate": 33.5
+       },
+       "GT.CQ": { // Chiquimula
+         "fillKey": "d6dcf0",
+         "numberOfThings": "In <strong> Chiquimula, 145 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 71  children per 100,000</strong> residents.",
+         "rate": 70.1
+       },
+       "GT.PR": { // El Progreso
+         "fillKey": "ededfe",
+         "numberOfThings": "In <strong> El Progreso, 18 </strong> unaccompanied minors were returned in 2018 at rate of <strong> 24  children per 100,000</strong> residents.",
+         "rate": 24
+       },
+       "GT.ES": { // Escuintla
+         "fillKey": "e0e3f6",
+         "numberOfThings":  "In <strong> Escuintla, 91 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 29  children per 100,000</strong> residents.",
+         "rate": 28.3
+       },
+       "GT.GU": { // Guatemala
+         "fillKey": "dadef2",
+         "numberOfThings": "In <strong> Guatemala, 125 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 11  children per 100,000</strong> residents.",
+         "rate": 10.5
+       },
+       "GT.HU": { // Huehuetenango
+         "fillKey": "02386f",
+         "numberOfThings":"In <strong> Huehuetenango, 1325 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 207  children per 100,000</strong> residents.",
+         "rate": 206.7
+       },
+       "GT.IZ": { // Izabal
+         "fillKey": "e8eafb",
+         "numberOfThings":"In <strong> Izabal, 44 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 20  children per 100,000</strong> residents.",
+         "rate": 19.7
+       },
+       "GT.JA": { // Jalapa
+         "fillKey": "e1e4f6",
+         "numberOfThings": "In <strong> Jalapa, 85 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>45 children per 100,000</strong> residents.",
+         "rate": 44.2
+       },
+       "GT.JU": { // Jutiapa
+         "fillKey": "d7ddf0",
+         "numberOfThings":  "In <strong> Jutiapa, 139 </strong> unaccompanied minors were returned in 2018 at rate of <strong>58 children per 100,000</strong> residents.",
+         "rate": 58
+       },
+       "GT.PE": { // Petén
+         "fillKey": "ced5eb",
+         "numberOfThings": "In <strong> Petén, 190 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 47  children per 100,000</strong> residents.",
+         "rate": 46.5
+       },
+       "GT.QZ": { // Quezaltenango
+         "fillKey": "b6c3dd",
+         "numberOfThings": "In <strong> Quezaltenango, 322 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong> 79  children per 100,000</strong> residents.",
+         "rate": 78.5
+       },
+       "GT.QC": { // Quiché
+         "fillKey": "7d97ba",
+         "numberOfThings": "In <strong> Quiché, 640 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>100 children per 100,000</strong> residents.",
+         "rate": 99.3
+       },
+       "GT.RE": { // Retalhuleu
+         "fillKey": "e4e7f8",
+         "numberOfThings":"In <strong> Retalhuleu, 66 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>43 children per 100,000</strong> residents.",
+         "rate": 42.3
+       },
+       "GT.SA": { // Sacatepéquez
+         "fillKey": "efefff",
+         "numberOfThings": "In <strong> Sacatepéquez, 6 </strong> unaccompanied minors were returned in 2018 at rate of <strong>4 children per 100,000</strong> residents.",
+         "rate": 4
+       },
+       "GT.SM": { // San Marcos
+         "fillKey": "215082",
+         "numberOfThings": "In <strong> San Marcos, 1153 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>211 children per 100,000</strong> residents.",
+         "rate": 210.9
+       },
+       "GT.SR": { // Santa Rosa
+         "fillKey": "e6e8fa",
+         "numberOfThings": "In <strong> Santa Rosa, 56 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>32 children per 100,000</strong> residents.",
+         "rate": 31.6
+       },
+       "GT.SO": { // Sololá
+         "fillKey": "d1d8ed",
+         "numberOfThings": "In <strong> Sololá, 171 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>64 children per 100,000</strong> residents.",
+         "rate": 63.9
+       },
+       "GT.SU": { //  Suchitepéquez
+         "fillKey": "dfe3f5",
+         "numberOfThings": "In <strong> Suchitepéquez, 95 </strong> unaccompanied minors were returned in 2018 at rate of <strong>34 children per 100,000</strong> residents.",
+         "rate": 34
+       },
+       "GT.TO": { // Totonicapán
+         "fillKey": "dce1f4",
+         "numberOfThings": "In <strong> Totonicapán, 110 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>37 children per 100,000</strong> residents.",
+         "rate": 36.4
+       },
+       "GT.ZA": { // Zacapa
+         "fillKey": "ebecfc",
+         "numberOfThings": "In <strong> Zacapa, 29 </strong> unaccompanied minors were returned in 2018 at rate of nearly <strong>28 children per 100,000</strong> residents.",
+         "rate": 27.6
+       }
+     }
+
+     //Percent of chronically malnourished children under 5 from 2014 to 2015
+     const malnutrition = {
+       "GT.AV": {
+         "fillKey": "6b89af",
+         "numberOfThings":"In <strong>Alta Verapaz, 50 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.BV": {
+         "fillKey": "6b89af",
+         "numberOfThings": "In <strong>Baja Verapaz, 50 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.CM": {
+         "fillKey": "466d99",
+         "numberOfThings": "In <strong>Chimaltenango, 57 percent</strong>  of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.CQ": {
+         "fillKey": "4c719c",
+         "numberOfThings": "In <strong>Chiquimula, 56 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.PR": {
+         "fillKey": "dadff2",
+         "numberOfThings": "In <strong>El Progreso, 29 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.ES": {
+         "fillKey": "e4e7f9",
+         "numberOfThings": "In <strong>Escuintla, 27 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.GU": {
+         "fillKey": "efefff",
+         "numberOfThings": "In <strong>Guatemala, 25 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.HU": {
+         "fillKey": "0d4075",
+         "numberOfThings": "In <strong>Huehuetenango, 68 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.IZ": {
+         "fillKey": "eaebfc",
+         "numberOfThings": "In <strong>Izabal, 26 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.JA": {
+         "fillKey": "5679a2",
+         "numberOfThings": "In <strong>Jalapa, 54 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.JU": {
+         "fillKey": "b5c2dc",
+         "numberOfThings": "In <strong>Jutiapa, 36 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.PE": {
+         "fillKey": "b5c2dc",
+         "numberOfThings": "In <strong>Petén, 36 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.QZ": {
+         "fillKey": "718db2",
+         "numberOfThings": "In <strong>Quezaltenango, 49 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.QC": {
+         "fillKey": "073c72",
+         "numberOfThings": "In <strong>Quiché, 69 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.RE": {
+         "fillKey": "c0cae2",
+         "numberOfThings": "In <strong>Retalhuleu, 34 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.SA": {
+         "fillKey": "95aac9",
+         "numberOfThings":  "In <strong>Sacatepéquez, 42 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.SM": {
+         "fillKey": "51759f",
+         "numberOfThings": "In <strong>San Marcos, 55 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.SR": {
+         "fillKey": "c0cae2",
+         "numberOfThings": "In <strong>Santa Rosa, 34 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.SO": {
+         "fillKey": "17487c",
+         "numberOfThings": "In <strong>Sololá, 66 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.SU": {
+         "fillKey": "a0b2cf",
+         "numberOfThings": "In <strong>Suchitepéquez, 40 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.TO": {
+         "fillKey": "02386f",
+         "numberOfThings": "In <strong>Totonicapán, 70 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       },
+       "GT.ZA": {
+         "fillKey": "a0b2cf",
+         "numberOfThings": "In <strong>Zacapa, 40 percent</strong> of children under age 5 were chronically malnourished from 2014 to 2015."
+       }
+     }
+     //"In Alta Verapaz, the rate of infant mortality was 40 per 1,000 live births between 2014 and 2015."
+     //Infant mortality per 1,000, 2014-2015
+     const infantMortality = {
+       "GT.AV": {
+         "fillKey": "93a8c7",
+         "numberOfThings": "In <strong>Alta Verapaz, the rate of infant mortality was 40</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.BV": {
+         "fillKey": "c9d2e8",
+         "numberOfThings":  "In <strong>Baja Verapaz, the rate of infant mortality was 30</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.CM": {
+         "fillKey": "6887ad",
+         "numberOfThings":"In <strong>Chimaltenango, the rate of infant mortality was 48</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.CQ": {
+         "fillKey": "02386f",
+         "numberOfThings": "In <strong>Chiquimula, the rate of infant mortality was 67</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.PR": {
+         "fillKey": "9eb1ce",
+         "numberOfThings": "In <strong>El Progreso, the rate of infant mortality was 38</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.ES": {
+         "fillKey": "93a8c7",
+         "numberOfThings": "In <strong>Escuintla, the rate of infant mortality was 40</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.GU": {
+         "fillKey": "cfd6eb",
+         "numberOfThings": "In <strong>Guatemala, the rate of infant mortality was 29</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.HU": {
+         "fillKey": "1d4d7f",
+         "numberOfThings":"In <strong>Huehuetenango, the rate of infant mortality was 62</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.IZ": {
+         "fillKey": "c4cee5",
+         "numberOfThings": "In <strong>Izabal, the rate of infant mortality was 31</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.JA": {
+         "fillKey": "89a0c1",
+         "numberOfThings": "In <strong>Jalapa, the rate of infant mortality was 42</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.JU": {
+         "fillKey": "7994b7",
+         "numberOfThings":"In <strong>Jutiapa, the rate of infant mortality was 45</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.PE": {
+         "fillKey": "e4e7f8",
+         "numberOfThings":"In <strong>Petén, the rate of infant mortality was 25</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.QZ": {
+         "fillKey": "aebdd8",
+         "numberOfThings":"In <strong>Quezaltenango, the rate of infant mortality was 35</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.QC": {
+         "fillKey": "9eb1ce",
+         "numberOfThings": "In <strong>Quiché, the rate of infant mortality was 38</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.RE": {
+         "fillKey": "a4b5d1",
+         "numberOfThings": "In <strong>Retalhuleu, the rate of infant mortality was 37</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.SA": {
+         "fillKey": "b9c5de",
+         "numberOfThings":"In <strong>Sacatepéquez, the rate of infant mortality was 33</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.SM": {
+         "fillKey": "aebdd8",
+         "numberOfThings":"In <strong>San Marcos, the rate of infant mortality was 35</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.SR": {
+         "fillKey": "efefff",
+         "numberOfThings":"In <strong>Santa Rosa, the rate of infant mortality was 23</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.SO": {
+         "fillKey": "cfd6eb",
+         "numberOfThings": "In <strong>Sololá, the rate of infant mortality was 29</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.SU": {
+         "fillKey": "a4b5d1",
+         "numberOfThings":"In <strong>Suchitepéquez, the rate of infant mortality was 37</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.TO": {
+         "fillKey": "7e98ba",
+         "numberOfThings":"In <strong>Totonicapán, the rate of infant mortality was 44</strong> per 1,000 live births from 2014 to 2015."
+       },
+       "GT.ZA": {
+         "fillKey": "efefff",
+         "numberOfThings":"In <strong>Zacapa, the rate of infant mortality was 23</strong> per 1,000 live births from 2014 to 2015."
+       }
+     };
+
+     //Percentage of children between ages 7 and 12 not enrolled in elementary school during 2014 school year
+     const enrolledInElementary = {
+       "GT.AV": {
+         "fillKey": "a1b3d0",
+         "numberOfThings": "In <strong>Alta Verapaz</strong>, <strong>11.5 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.BV": {
+         "fillKey": "ecedfd",
+         "numberOfThings": "In <strong>Baja Verapaz</strong>, <strong>3.2 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.CM": {
+         "fillKey": "c3cde5",
+         "numberOfThings": "In <strong>Chimaltenango</strong>, <strong>7.7 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.CQ": {
+         "fillKey": "b7c4dd",
+         "numberOfThings": "In <strong>Chiquimula</strong>, <strong>9.1 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.PR": {
+         "fillKey": "efefff",
+         "numberOfThings": "In <strong>El Progreso</strong>, <strong>2.9 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.ES": {
+         "fillKey": "c8d1e7",
+         "numberOfThings":"In <strong>Escuintla</strong>, <strong>7.2 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.GU": {
+         "fillKey": "cfd6ec",
+         "numberOfThings": "In <strong>Guatemala</strong>, <strong> 6.4 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.HU": {
+         "fillKey": "8099bc",
+         "numberOfThings":"In <strong>Huehuetenango</strong>, <strong>15.1 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.IZ": {
+         "fillKey": "02386f",
+         "numberOfThings":"In <strong>Izabal</strong>, <strong>29 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.JA": {
+         "fillKey": "b7c4dd",
+         "numberOfThings":"In <strong>Jalapa</strong>, <strong>9.1 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.JU": {
+         "fillKey": "e1e4f7",
+         "numberOfThings":"In <strong>Jutiapa</strong>, <strong>4.4 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.PE": {
+         "fillKey": "d7ddf1",
+         "numberOfThings": "In <strong>Petén</strong>, <strong>5.5 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.QZ": {
+         "fillKey": "c0cbe2",
+         "numberOfThings": "In <strong>Quezaltenango</strong>, <strong>8.1 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.QC": {
+         "fillKey": "a5b6d2",
+         "numberOfThings":"In <strong>Quiché</strong>, <strong>11.1 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.RE": {
+         "fillKey": "9db0cd",
+         "numberOfThings":"In <strong>Retalhuleu</strong>, <strong>11.9 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.SA": {
+         "fillKey": "e8e9fb",
+         "numberOfThings":"In <strong>Sacatepéquez</strong>, <strong>3.7 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.SM": {
+         "fillKey": "b7c4dd",
+         "numberOfThings": "In <strong>San Marcos</strong>, <strong>9.1 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.SR": {
+         "fillKey": "ecedfd",
+         "numberOfThings": "In <strong>Santa Rosa</strong>, <strong>3.2 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.SO": {
+         "fillKey": "cad2e8",
+         "numberOfThings": "In <strong>Sololá</strong>, <strong>7 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.SU": {
+         "fillKey": "b4c1db",
+         "numberOfThings": "In <strong>Suchitepéquez</strong>, <strong>9.4 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.TO": {
+         "fillKey": "c1cbe3",
+         "numberOfThings": "In <strong>Totonicapán</strong>, <strong>8 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       },
+       "GT.ZA": {
+         "fillKey": "e3e6f8",
+         "numberOfThings": "In <strong>Zacapa</strong>, <strong>4.2 percent of children</strong> between ages 7 and 12 were not enrolled in elementary school during the 2014 school year."
+       }
+     }
+
+     //Percentage of population living in poverty, 2014
+     const populationLivingInPoverty = {
+       "GT.AV": {
+         "fillKey": "02386f",
+         "numberOfThings": "In <strong>Alta Verapaz</strong>, <strong>83.1 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.BV": {
+         "fillKey": "5276a0",
+         "numberOfThings":"In <strong>Baja Verapaz</strong>, <strong>66.3 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.CM": {
+         "fillKey": "5376a0",
+         "numberOfThings": "In <strong>Chimaltenango</strong>, <strong>66.1 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.CQ": {
+         "fillKey": "3d6693",
+         "numberOfThings": "In <strong>Chiquimula</strong>, <strong>70.6 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.PR": {
+         "fillKey": "90a6c5",
+         "numberOfThings":"In <strong>El Progreso</strong>, <strong>53.2 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.ES": {
+         "fillKey": "92a7c6",
+         "numberOfThings":"In <strong>Escuintla</strong>, <strong>52.9 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.GU": {
+         "fillKey": "efefff",
+         "numberOfThings":"In <strong>Guatemala</strong>, <strong>33.3 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.HU": {
+         "fillKey": "2e5a8a",
+         "numberOfThings":"In <strong>Huehuetenango</strong>, <strong>73.8 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.IZ": {
+         "fillKey": "708db2",
+         "numberOfThings": "In <strong>Izabal</strong>, <strong>59.9 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.JA": {
+         "fillKey": "4e729d",
+         "numberOfThings": "In <strong>Jalapa</strong>, <strong>67.2 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.JU": {
+         "fillKey": "6383aa",
+         "numberOfThings": "In <strong>Jutiapa</strong>, <strong>62.7 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.PE": {
+         "fillKey": "6c8aaf",
+         "numberOfThings": "In <strong>Petén</strong>, <strong>60.8 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.QZ": {
+         "fillKey": "839cbd",
+         "numberOfThings":"In <strong>Quezaltenango</strong>, <strong>56 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.QC": {
+         "fillKey": "2a5787",
+         "numberOfThings": "In <strong>Quiché</strong>, <strong>74.7 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.RE": {
+         "fillKey": "829bbd",
+         "numberOfThings":"In <strong>Retalhuleu</strong>, <strong>56.1 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.SA": {
+         "fillKey": "cad2e8",
+         "numberOfThings": "In <strong>Sacatepéquez</strong>, <strong>41.1 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.SM": {
+         "fillKey": "6f8cb1",
+         "numberOfThings": "In <strong>San Marcos</strong>, <strong>60.2 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.SR": {
+         "fillKey": "8ba2c2",
+         "numberOfThings":"In <strong>Santa Rosa</strong>, <strong>54.3 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.SO": {
+         "fillKey": "0c4075",
+         "numberOfThings": "In <strong>Sololá</strong>, <strong>80.9 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.SU": {
+         "fillKey": "5e7fa7",
+         "numberOfThings":"In <strong>Suchitepéquez</strong>, <strong>63.8 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.TO": {
+         "fillKey": "1d4d7f",
+         "numberOfThings":"In <strong>Totonicapán</strong>, <strong>77.5 percent</strong> of the population lived in poverty in 2014."
+       },
+       "GT.ZA": {
+         "fillKey": "839cbe",
+         "numberOfThings":"In <strong>Zacapa</strong>, <strong>55.9 percent</strong> of the population lived in poverty in 2014."
+       }
+     }
+
+     //"Percentage of population living in extreme poverty, 2014"
+      const extremePoverty2014 = {
+       "GT.BV": {
+         "fillKey": "02386f",
+         "numberOfThings": "In <strong>Baja Verapaz</strong>, <strong>24.6 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.HU": {
+         "fillKey": "7d97ba",
+         "numberOfThings": "In <strong>Huehuetenango</strong>, <strong>28.6 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.PE": {
+         "fillKey": "a6b7d3",
+         "numberOfThings": "In <strong>Petén</strong>, <strong>20.2 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.QZ": {
+         "fillKey": "b7c4dd",
+         "numberOfThings": "In <strong>Quezaltenango</strong>, <strong>16.7 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.RE": {
+         "fillKey": "bec9e1",
+         "numberOfThings": "In <strong>Retalhuleu</strong>, <strong>15.3 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.SM": {
+         "fillKey": "9db0cd",
+         "numberOfThings": "In <strong>San Marcos</strong>, <strong>22 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.AV": {
+         "fillKey": "02386f",
+         "numberOfThings": "In <strong>Alta Verapaz</strong>, <strong>53.6 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.CM": {
+         "fillKey": "96abc9",
+         "numberOfThings": "In <strong>Chimaltenango</strong>, <strong>23.4 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.ES": {
+         "fillKey": "d2d9ee",
+         "numberOfThings": "In <strong>Escuintla</strong>, <strong>11.2 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.GU": {
+         "fillKey": "efefff",
+         "numberOfThings": "In <strong>Guatemala</strong>, <strong>5.4 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.SU": {
+         "fillKey": "a8b8d4",
+         "numberOfThings": "In <strong>Suchitepéquez</strong>, <strong>19.8 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.SA": {
+         "fillKey": "e0e4f6",
+         "numberOfThings": "In <strong>Sacatepéquez</strong>, <strong>8.4 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.SO": {
+         "fillKey": "456c98",
+         "numberOfThings":"In <strong>Sololá</strong>, <strong>39.9 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.TO": {
+         "fillKey": "3f6794",
+         "numberOfThings":"In <strong>Totonicapán</strong>, <strong>41.1 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.PR": {
+         "fillKey": "c9d1e8",
+         "numberOfThings": "In <strong>El Progreso</strong>, <strong>13.2 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.SR": {
+         "fillKey": "cad3e9",
+         "numberOfThings": "In <strong>Santa Rosa</strong>, <strong>12.9 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.IZ": {
+         "fillKey": "5c7ea6",
+         "numberOfThings": "In <strong>Izabal</strong>, <strong>35.2 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.CQ": {
+         "fillKey": "3f6794",
+         "numberOfThings":"In <strong>Chiquimula</strong>, <strong>41.1 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.JA": {
+         "fillKey": "9cafcd",
+         "numberOfThings": "In <strong>Jalapa</strong>, <strong>22.3 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.JU": {
+         "fillKey": "93a8c7",
+         "numberOfThings": "In <strong>Jutiapa</strong>, <strong>24.2 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.ZA": {
+         "fillKey": "a0b2cf",
+         "numberOfThings": "In <strong>Zacapa</strong>, <strong>21.4 percent</strong> of the population lived in extreme poverty in 2014."
+       },
+       "GT.QC": {
+         "fillKey": "3c6592",
+         "numberOfThings": "In <strong>Quiché</strong>, <strong>41.8 percent</strong> of the population lived in extreme poverty in 2014."
+       }
+     }
+
+
+
+
+       //basic map config with custom fills, mercator projection
+      var map = new Datamap({
+        //responsive: true,
+        scope: 'gtm',
+        element: document.getElementById('container1'),
+        setProjection: function(element) {
+    var projection = d3.geo.equirectangular()
+      .center([-90.173390, 15.7])
+      //.rotate([4.4, 0])
+      .scale(5300)
+      .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+    var path = d3.geo.path()
+      .projection(projection);
+
+    return {path: path, projection: projection};
+  },
+
+
+      fills: { defaultFill: '#F5F5F5',   // countries not listed in dataset will be painted with this color
+               Higher: '#02386F',
+               Lower: '#EFEFFF',
+                        "b6c3dd":"#b6c3dd",
+                        "9cafcd": "#9cafcd",
+                        "ced5eb":"#ced5eb",
+                        "c2cce3": "#c2cce3",
+                        "eaebfc": "#eaebfc",
+                        "ededfe":"#ededfe",
+                        "ebecfc":"#ebecfc",
+                        "efefff": "#efefff",
+                        "e8eafb":"#e8eafb",
+                        "e7e9fa": "#e7e9fa",
+                        "e6e8fa":"#e6e8fa",
+                        "e5e7f9": "#e5e7f9",
+                        "e4e7f8":"#e4e7f8",
+                        "e2e5f7": "#e2e5f7",
+                        "e1e4f6":"#e1e4f6",
+                        "e0e4f6":"#e0e4f6",
+                        "e0e3f6":"#e0e3f6",
+                        "bac6df": "#bac6df",
+                        "e0e4f6": "#e0e4f6",
+                        "abbbd6": "#abbbd6",
+                        "02386f": "#02386f",
+                        "5f7fa7": "#5f7fa7",
+                        "c4cee5": "#c4cee5",
+                        "dee2f5": "#dee2f5",
+                        "95aac8": "#95aac8",
+                        "819abc": "#819abc",
+                        "a9b9d5": "#a9b9d5",
+                        "dde1f4": "#dde1f4",
+                        "d7ddf0":"#d7ddf0",
+                        "6081a8": "#6081a8",
+                        "d6dcf0": "#d6dcf0",
+                        "d1d8ed":"#d1d8ed",
+                        "c1cce3": "#c1cce3",
+                        "dadff2":"#dadff2",
+                        "dadef2": "#dadef2",
+                        "7d97ba":"#7d97ba",
+                        "215082":"#215082",
+                        "dfe3f5":"#dfe3f5",
+                        "dce1f4":"#dce1f4",
+                        //malnutricion
+                        "6b89af":"#6b89af",
+                        "466d99":"#466d99",
+                        "4c719c":"#4c719c",
+                        "dadff2":"#dadff2",
+                        "e4e7f9":"#e4e7f9",
+                        "efefff":"#efefff",
+                        "0d4075":"#0d4075",
+                        "eaebfc":"#eaebfc",
+                        "5679a2":"#5679a2",
+                        "b5c2dc":"#b5c2dc",
+                        "718db2":"#718db2",
+                        "073c72":"#073c72",
+                        "c0cae2":"#c0cae2",
+                        "95aac9":"#95aac9",
+                        "51759f":"#51759f",
+                        "17487c":"#17487c",
+                        "a0b2cf":"#a0b2cf",
+                        "02386f":"#02386f",
+                        "a0b2cf":"#a0b2cf",
+                        //Infant mortality
+                        "93a8c7":"#93a8c7",
+                        "c9d2e8":"#c9d2e8",
+                        "6887ad":"#6887ad",
+                        "02386f":"#02386f",
+                        "9eb1ce":"#9eb1ce",
+                        "93a8c7":"#93a8c7",
+                        "cfd6eb":"#cfd6eb",
+                        "1d4d7f":"#1d4d7f",
+                        "c4cee5":"#c4cee5",
+                        "89a0c1":"#89a0c1",
+                        "7994b7":"#7994b7",
+                        "e4e7f8":"#e4e7f8",
+                        "aebdd8":"#aebdd8",
+                        "9eb1ce":"#9eb1ce",
+                        "a4b5d1":"#a4b5d1",
+                        "b9c5de":"#b9c5de",
+                          "aebdd8":"#aebdd8",
+                          "efefff":"#efefff",
+                          "cfd6eb":"#cfd6eb",
+                          "a4b5d1":"#a4b5d1",
+                          "7e98ba":"#7e98ba",
+                          "efefff":"#efefff",
+                          //not enrolled in elementary school
+                          "a1b3d0":"#a1b3d0",
+                          "ecedfd":"#ecedfd",
+                          "c3cde5":"#c3cde5",
+                          "b7c4dd":"#b7c4dd",
+                          "efefff":"#efefff",
+                          "c8d1e7":"#c8d1e7",
+                          "cfd6ec":"#cfd6ec",
+                        "8099bc":"#8099bc",
+                        "02386f":"#02386f",
+                        "b7c4dd":"#b7c4dd",
+                        "e1e4f7":"#e1e4f7",
+                        "d7ddf1":"#d7ddf1",
+                          "c0cbe2":"#c0cbe2",
+                          "a5b6d2":"#a5b6d2",
+                          "9db0cd":"#9db0cd",
+                          "e8e9fb":"#e8e9fb",
+                          "b7c4dd":"#b7c4dd",
+                          "ecedfd":"#ecedfd",
+                          "cad2e8":"#cad2e8",
+                          "b4c1db":"#b4c1db",
+                          "c1cbe3":"#c1cbe3",
+                          "e3e6f8":"#e3e6f8",
+                          //population living in poverty
+                          "02386f":"#02386f",
+                          "5276a0":"#5276a0",
+                          "5376a0":"#5376a0",
+                          "3d6693":"#3d6693",
+                          "90a6c5":"#90a6c5",
+                          "92a7c6":"#92a7c6",
+                          "efefff":"#efefff",
+                          "2e5a8a":"#2e5a8a",
+                          "708db2":"#708db2",
+                          "4e729d":"#4e729d",
+                          "6383aa":"#6383aa",
+                           "6c8aaf": "#6c8aaf",
+                           "839cbd":"#839cbd",
+                           "2a5787":"#2a5787",
+                          "829bbd":"#829bbd",
+                          "cad2e8":"#cad2e8",
+                          "6f8cb1":"#6f8cb1",
+                          "8ba2c2":"#8ba2c2",
+                          "0c4075":"#0c4075",
+                          "5e7fa7":"#5e7fa7",
+                          "1d4d7f":"#1d4d7f",
+                          "839cbe":"#839cbe",
+                          //extreme poverty
+                          "02386f":"#02386f",
+                          "7d97ba":"#7d97ba",
+                          "a6b7d3":"#a6b7d3",
+                            "b7c4dd":"#b7c4dd",
+                          "bec9e1":"#bec9e1",
+                          "9db0cd":"#9db0cd",
+                          "02386f":"#02386f",
+                          "96abc9":"#96abc9",
+                          "d2d9ee":"#d2d9ee",
+                          "efefff":"#efefff",
+                          "a8b8d4":"#a8b8d4",
+                          "e0e4f6":"#e0e4f6",
+                          "456c98":"#456c98",
+                          "3f6794":"#3f6794",
+                          "c9d1e8":"#c9d1e8",
+                          "cad3e9":"#cad3e9",
+                          "5c7ea6":"#5c7ea6",
+                          "3f6794":"#3f6794",
+                          "9cafcd":"#9cafcd",
+                          "93a8c7":"#93a8c7",
+                          "a0b2cf":"#a0b2cf",
+                          "3c6592":"#3c6592"
+              },
+      data: {},
+      aspectRatio: .5625,
+      geographyConfig: {
+          borderColor: '#DEDEDE',
+          highlightBorderWidth: 2,
+          // don't change color on mouse hover
+          highlightFillColor: function(geo) {
+              return geo['fillColor'] || '#F5F5F5';
+            },
+                        // only change border
+  highlightBorderColor: '#B7B7B7',
+  // show desired information in tooltip
+  popupTemplate: function(geo, data) {
+                // don't show tooltip if country don't present in dataset
+                if (!data) { return ; }
+                // tooltip content
+                // console.log(data.fillColor);
+                return ["<div class='hoverinfo'>",data.numberOfThings,
+                    "</di>"].join('');
+            }
+          }
+
+      })
+
+      function start(start){
+        map.updateChoropleth(null, {reset: true});
+        map.updateChoropleth(start);
+        $('#titleLegend').text('Remittances received from the United States in 2016');
+        $('#source').text('Source: Survey conducted by the Interenational Organization for Migration');
+        $('#more').text('More');
+        $('#less').text('Fewer');
+        //based on a survey conducted by the Interenational Organization for Migration
+      }
+
+     function updateRe(arg) {
+       console.log('remittances');
+       map.updateChoropleth(null, {reset: true});
+       map.updateChoropleth(arg);
+       $('#titleLegend').text('Remittances received from the United States in 2016');
+       $('#source').text('Source: Survey conducted by the Interenational Organization for Migration');
+       $('#more').text('More');
+       $('#less').text('Fewer');
+
+     }
+
+
+
+    function updateUAM(uam) {
+      console.log('UAM');
+       map.updateChoropleth(null,{reset: true});
+       map.updateChoropleth(uam);
+       $('#titleLegend').text('Returned unaccompanied minors in 2018');
+       $('#source').text('Source: International Organization for Immigration');
+       $('#more').text('More');
+       $('#less').text('Fewer');
+
+    }
+
+    function chronicallyMalnourished(mal) {
+      console.log('mal');
+       map.updateChoropleth(null,{reset: true});
+       map.updateChoropleth(mal);
+       $('#titleLegend').text('Percentage of chronically malnourished children under age 5 from 2014-2015');
+       $('#source').text('Source: Guatemala National Maternal and Child Health Survey 2014-2015');
+       $('#more').text('Higher');
+       $('#less').text('Lower');
+
+    }
+
+
+    function infantMortalityFunction(infantMort){
+      console.log('infant');
+       map.updateChoropleth(null,{reset: true});
+       map.updateChoropleth(infantMort);
+       $('#titleLegend').text('Rate of infant mortality per 1,000 live births from 2014 to 2015');
+       $('#source').text('Source: Guatemala National Maternal and Child Health Survey 2014-2015');
+       $('#more').text('Higher');
+       $('#less').text('Lower');
+
+    }
+
+    function schoolEnrollment(enrolled){
+      console.log('infant');
+       map.updateChoropleth(null,{reset: true});
+       map.updateChoropleth(enrolled);
+       $('#titleLegend').text('Percentage of children between ages 7 and 12 not enrolled in elementary school during 2014 school year');
+       $('#source').text('Source: The National Statistics Institute of Guatemala');
+       $('#more').text('Higher');
+       $('#less').text('Lower');
+
+    }
+
+    function poverty(pov){
+      console.log('infant');
+       map.updateChoropleth(null,{reset: true});
+       map.updateChoropleth(pov);
+       $('#titleLegend').text('Percentage of population living in poverty in 2014');
+       $('#source').text('Source: Instituto Alianza Nacional Contra la Pobreza');
+       $('#more').text('Higher');
+       $('#less').text('Lower');
+
+    }
+
+    function povertyExtreme(povExt){
+      console.log('infant');
+       map.updateChoropleth(null,{reset: true});
+       map.updateChoropleth(povExt);
+       $('#titleLegend').text('Percentage of population living in extreme poverty in 2014');
+       $('#source').text('Source: The National Statistics Institute of Guatemala');
+       $('#more').text('Higher');
+       $('#less').text('Lower');
+
+    }
+
+
+     </script>
+
+
+
+</body>
+
+</html>
